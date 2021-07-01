@@ -7,6 +7,7 @@ import me.simran.entity.models.EmployeePerformance;
 import me.simran.entity.models.Pickup;
 import me.simran.exception.PickupIdNotFoundException;
 import me.simran.repository.Employee.EmployeeRepository;
+import me.simran.service.kafka.producer.ProducerServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -18,9 +19,11 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     long id = random.nextLong();
     private final EmployeeRepository repository;
+    private final ProducerServiceImpl producerService;
 
-    public EmployeeServiceImpl(EmployeeRepository repository){
+    public EmployeeServiceImpl(EmployeeRepository repository,ProducerServiceImpl producerService){
         this.repository = repository;
+        this.producerService = producerService;
     }
 
 
@@ -90,13 +93,24 @@ public class EmployeeServiceImpl implements EmployeeService{
 
                 repository.updatePerformanceRetrieved(performanceRetrieved.getId(), performanceRetrieved.getAverageBatchPickupTime(), performanceRetrieved.getAverageSinglePickupTime(), performanceRetrieved.getBatchPickupCount(), performanceRetrieved.getEmpId(), performanceRetrieved.getSinglePickupTotalCount());
 
+                producerService.sendPerformanceStats(performanceRetrieved);
                 }
 
                 /**Creating a new Entry for Single Pickup Count**/
                 else{
                     id++;
                     repository.insertIntoPerformance(id,0, difference, 0, employee.getEmpId(), 1);
+                    EmployeePerformance newPerformance = new EmployeePerformance();
+                    newPerformance.setEmpId(id);
+                    newPerformance.setAverageBatchPickupTime(0);
+                    newPerformance.setAverageSinglePickupTime(difference);
+                    newPerformance.setBatchPickupCount(0);
+                    newPerformance.setEmpId(employee.getEmpId());
+                    newPerformance.setSinglePickupTotalCount(1);
+
+                    producerService.sendPerformanceStats(newPerformance);
                 }
+
             }
 
             else if(pickupNew.getPickupType().equals(PickupType.BATCH)){
@@ -127,15 +141,27 @@ public class EmployeeServiceImpl implements EmployeeService{
 
                     repository.updatePerformanceRetrieved(performanceRetrieved.getId(), performanceRetrieved.getAverageBatchPickupTime(), performanceRetrieved.getAverageSinglePickupTime(), performanceRetrieved.getBatchPickupCount(), performanceRetrieved.getEmpId(), performanceRetrieved.getSinglePickupTotalCount());
 
+                    producerService.sendPerformanceStats(performanceRetrieved);
                 }
 
                 /**Creating a new Entry for Batch Pickup Count**/
                 else{
                     id++;
                     repository.insertIntoPerformance(id,difference, 0, 1, employee.getEmpId(), 0);
+                    EmployeePerformance newPerformance = new EmployeePerformance();
+                    newPerformance.setEmpId(id);
+                    newPerformance.setAverageBatchPickupTime(0);
+                    newPerformance.setAverageSinglePickupTime(difference);
+                    newPerformance.setBatchPickupCount(0);
+                    newPerformance.setEmpId(employee.getEmpId());
+                    newPerformance.setSinglePickupTotalCount(1);
+
+                    producerService.sendPerformanceStats(newPerformance);
                 }
+                producerService.sendPerformanceStats(performanceRetrieved);
             }
         }
+
         else
             throw new PickupIdNotFoundException("Pickup Id ["+pickupId+"] was not found!" );
     }
