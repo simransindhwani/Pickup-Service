@@ -17,7 +17,7 @@ public class EmployeePerformance {
     @Id
     private long id;
 
-    @Column(name="empId")
+    @Column(name="emp_id")
     private long empId;
 
     @Column(name="single_pickup_total_count")

@@ -1,7 +1,8 @@
 package me.simran.service.kafka.consumer;
 
 import lombok.extern.slf4j.Slf4j;
-import me.simran.entity.thirdParty.EmployeePerformance;
+import me.simran.entity.models.EmployeePerformance;
+import me.simran.entity.thirdParty.EmpStats;
 import me.simran.service.ThirdParty.ThirdPartyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -27,6 +28,16 @@ public class ConsumerServiceImpl {
                                  @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key,
                                  EmployeePerformance performance) {
         log.info("Consumed Order:{} for customerId {} from Partition {} at offset {}", key, performance.getEmpId(), partition, offset);
-        service.saveEmployeePerformance(performance);
+
+        EmpStats empStats = new EmpStats();
+        empStats.setEmpId(performance.getEmpId());
+        empStats.setId(performance.getId());
+        empStats.setAverageBatchPickupTime(performance.getAverageBatchPickupTime());
+        empStats.setAverageSinglePickupTime(performance.getAverageSinglePickupTime());
+        empStats.setSinglePickupTotalCount(performance.getSinglePickupTotalCount());
+        empStats.setBatchPickupCount(performance.getBatchPickupCount());
+
+
+        service.saveEmployeePerformance(empStats);
     }
 }

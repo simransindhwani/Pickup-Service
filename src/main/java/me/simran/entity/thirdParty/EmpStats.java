@@ -9,15 +9,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema="thirdParty_db",name="employee_performance")
+@Table(schema="thirdParty_db",name="employee_stats_rcvd")
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class EmployeePerformance {
+public class EmpStats {
 
     @Id
     private long id;
 
-    @Column(name="empId")
+    @Column(name="emp_id")
     private long empId;
 
     @Column(name="single_pickup_total_count")
@@ -32,7 +32,7 @@ public class EmployeePerformance {
     @Column(name="average_batch_pickup_time")
     private long AverageBatchPickupTime;
 
-    public EmployeePerformance(){
+    public EmpStats(){
     }
 
     public long getId() {

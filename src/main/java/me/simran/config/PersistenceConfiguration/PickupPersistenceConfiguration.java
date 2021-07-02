@@ -1,13 +1,8 @@
 package me.simran.config.PersistenceConfiguration;
 
-//imports
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -23,33 +18,35 @@ import java.util.Properties;
 @Configuration
 @PropertySource({ "classpath:application.properties" })
 @EnableJpaRepositories(
-        basePackages = "me.simran.repository.thirdParty",
-        entityManagerFactoryRef = "thirdPartyEntityManager",
-        transactionManagerRef = "thirdPartyTransactionManager"
+        basePackages = {"me.simran.repository.Employee", "me.simran.repository.Pickup"},
+        entityManagerFactoryRef = "pickupEntityManager",
+        transactionManagerRef = "pickupTransactionManager"
 )
-public class ThirdPartyPersistenceConfiguration {
+public class PickupPersistenceConfiguration {
 
     private final Environment env;
 
-    public ThirdPartyPersistenceConfiguration(Environment env) {
+    public PickupPersistenceConfiguration(Environment env) {
         this.env = env;
     }
 
+    @Primary
     @Bean
-    @ConfigurationProperties(prefix="spring.thirddb-datasource")
-
-    public DataSource thirdPartyDataSource() {
+    @ConfigurationProperties(prefix="spring.datasource")
+    public DataSource pickupDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean thirdPartyEntityManager() {
+    @Primary
+    public LocalContainerEntityManagerFactoryBean pickupEntityManager() {
         final LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(thirdPartyDataSource());
-        em.setPackagesToScan("me.simran.entity.thirdParty");
+        em.setDataSource(pickupDataSource());
+        em.setPackagesToScan("me.simran.entity.models");
 
-        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        final HibernateJpaVendorAdapter vendorAdapter
+                = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
 
         Properties properties = new Properties();
@@ -57,16 +54,19 @@ public class ThirdPartyPersistenceConfiguration {
         properties.put("hibernate.hbm2ddl.auto","create-drop");
         properties.put("hibernate.show_sql", "true");
         em.setJpaProperties(properties);
+
         return em;
     }
 
+
+    @Primary
     @Bean
-    public PlatformTransactionManager thirdPartyTransactionManager() {
+    public PlatformTransactionManager pickupTransactionManager() {
 
         final JpaTransactionManager transactionManager
                 = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
-                thirdPartyEntityManager().getObject());
+                pickupEntityManager().getObject());
         return transactionManager;
     }
 }

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="customer_order")
+@Table(name="order_placed")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 public class Order {

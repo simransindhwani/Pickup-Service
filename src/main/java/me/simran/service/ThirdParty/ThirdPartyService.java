@@ -1,8 +1,9 @@
 package me.simran.service.ThirdParty;
 
-import me.simran.entity.thirdParty.EmployeePerformance;
+import me.simran.entity.models.EmployeePerformance;
+import me.simran.entity.thirdParty.EmpStats;
 
 public interface ThirdPartyService {
 
-    void saveEmployeePerformance(EmployeePerformance performance);
+    void saveEmployeePerformance(EmpStats stats);
 }

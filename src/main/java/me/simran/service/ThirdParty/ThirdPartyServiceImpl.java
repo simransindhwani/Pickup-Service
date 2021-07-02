@@ -1,6 +1,7 @@
 package me.simran.service.ThirdParty;
 
-import me.simran.entity.thirdParty.EmployeePerformance;
+import me.simran.entity.models.EmployeePerformance;
+import me.simran.entity.thirdParty.EmpStats;
 import me.simran.repository.thirdParty.ThirdPartyRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
 
 
     @Override
-    public void saveEmployeePerformance(EmployeePerformance performance) {
-        repository.save(performance);
+    public void saveEmployeePerformance(EmpStats stats) {
+        repository.save(stats);
     }
 }
