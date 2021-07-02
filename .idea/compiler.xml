@@ -10,5 +10,8 @@
         <module name="Order-Pickup" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Order-Pickup" target="14" />
+    </bytecodeTargetLevel>
   </component>
 </project>
